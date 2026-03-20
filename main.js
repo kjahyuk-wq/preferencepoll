@@ -132,6 +132,7 @@ async function hasVoted(group) {
 }
 
 const successGroupName = document.getElementById('successGroupName');
+const alreadyGroupName = document.getElementById('alreadyGroupName');
 
 function showState(state, groupName = '') {
   waitingMsg.classList.add('hidden');
@@ -151,6 +152,7 @@ function showState(state, groupName = '') {
     submitBtn.textContent = '투표 제출하기';
     document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
   } else if (state === 'alreadyVoted') {
+    alreadyGroupName.textContent = groupName;
     alreadyVoted.classList.remove('hidden');
   } else if (state === 'success') {
     successGroupName.textContent = groupName;

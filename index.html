@@ -57,9 +57,15 @@
 
       <!-- 이미 투표함 -->
       <div id="alreadyVoted" class="status-box hidden">
-        <div class="status-icon">✅</div>
-        <p class="status-title">이미 투표하셨습니다</p>
-        <p class="status-sub">다음 조 발표를 기다려 주세요.</p>
+        <div class="success-check">✅</div>
+        <p class="success-group-name" id="alreadyGroupName"></p>
+        <p class="success-label">투표가 완료되었습니다</p>
+        <div class="divider"></div>
+        <div class="waiting-row">
+          <span class="waiting-dots"><span></span><span></span><span></span></span>
+          <span class="waiting-text">다음 조 발표 대기 중</span>
+        </div>
+        <p class="waiting-hint">다음 투표가 시작되면 자동으로 화면이 전환됩니다</p>
       </div>
 
       <!-- 투표 완료 + 대기 -->
