@@ -238,8 +238,11 @@ async function openVoting(group) {
 }
 
 async function closeVoting() {
+  const nextGroup = sessionData.activeGroup < GROUP_NAMES.length
+    ? sessionData.activeGroup + 1
+    : null;
   await setDoc(doc(db, 'session', 'current'), {
-    activeGroup: sessionData.activeGroup,
+    activeGroup: nextGroup,
     isOpen: false
   });
 }
