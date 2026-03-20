@@ -728,17 +728,17 @@ body {
   background: #07090f;
   display: flex;
   flex-direction: column;
-  padding: 14px 18px 10px;
+  padding: 12px 20px 8px;
   overflow: hidden;
+  gap: 10px;
 }
 
 .results-header {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: 16px;
+  gap: 14px;
   flex-shrink: 0;
-  margin-bottom: 10px;
 }
 
 .results-header .hdr-logo {
@@ -748,102 +748,165 @@ body {
 }
 
 .results-header h1 {
-  font-size: 1.1rem;
+  font-size: 1rem;
   font-weight: 800;
   color: #e8edf8;
 }
 
-.results-grid {
+/* ── 하위권 (others) ── */
+.others-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.others-card {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  background: #111827;
+  border: 1px solid #1f2d45;
+  border-radius: 10px;
+  padding: 8px 18px;
+  opacity: 0;
+  transform: translateY(12px);
+  transition: opacity 0.5s ease, transform 0.5s ease;
+}
+
+.others-card.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.others-name {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: #94a3b8;
+}
+
+.others-score {
+  font-size: 0.9rem;
+  color: #64748b;
+}
+
+/* ── TOP 3 예고 배너 ── */
+.top3-announcement {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  opacity: 0;
+  transform: scale(0.6);
+  transition: opacity 0.6s cubic-bezier(.22, 1, .36, 1),
+              transform 0.6s cubic-bezier(.22, 1, .36, 1);
+}
+
+.top3-announcement.show {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.top3-trophy {
+  font-size: 2rem;
+}
+
+.top3-text {
+  font-size: 1.6rem;
+  font-weight: 900;
+  color: #f59e0b;
+  letter-spacing: 3px;
+  text-shadow: 0 0 30px rgba(245, 158, 11, 0.6);
+}
+
+/* ── TOP 3 포디움 그리드 ── */
+.top3-grid {
   flex: 1;
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  grid-template-rows: repeat(2, 1fr);
-  gap: 10px;
+  grid-template-columns: 1fr 1.35fr 1fr;
+  gap: 12px;
   min-height: 0;
+  align-items: end;
 }
 
-/* ── 결과 카드 ── */
-.result-card {
+/* ── TOP 3 카드 공통 ── */
+.top3-card {
+  border-radius: 16px;
+  padding: 20px 16px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
   opacity: 0;
-  transform: translateY(40px) scale(0.95);
-  transition: opacity 0.5s cubic-bezier(.22, 1, .36, 1),
-              transform 0.5s cubic-bezier(.22, 1, .36, 1);
-  border-radius: 14px;
-  overflow: hidden;
-  position: relative;
+  transform: translateY(60px) scale(0.9);
+  transition: opacity 0.6s cubic-bezier(.22, 1, .36, 1),
+              transform 0.6s cubic-bezier(.22, 1, .36, 1);
+  border: 2px solid #1f2d45;
+  background: #111827;
   min-height: 0;
+  position: relative;
 }
 
-.result-card.visible {
+.top3-card.visible {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
 
-.rank-badge {
+/* 포디움 높이 차이 */
+.top3-card.rank-3 { padding-top: 16px; }
+.top3-card.rank-2 { padding-top: 18px; }
+.top3-card.rank-1 { padding-top: 24px; }
+
+.t3-rank-badge {
   position: absolute;
-  top: 0; left: 0;
-  background: #1a2540;
-  padding: 6px 14px;
+  top: 10px; left: 12px;
   font-size: 0.75rem;
   font-weight: 700;
   color: #6b7fa8;
-  border-bottom-right-radius: 10px;
-  z-index: 1;
 }
 
-.card-inner {
-  height: 100%;
-  background: #111827;
-  border: 1px solid #1f2d45;
-  border-radius: 14px;
-  padding: 10px 14px 10px 72px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-  transition: border-color 0.4s, box-shadow 0.4s, background 0.4s;
+.t3-medal {
+  font-size: 2rem;
+  line-height: 1;
 }
 
-.card-header {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 20px;
-}
+.top3-card.rank-1 .t3-medal { font-size: 2.6rem; }
 
-.rcard-group-name {
-  font-size: 1.3rem;
+.t3-name {
+  font-size: 1.2rem;
   font-weight: 900;
   color: #e8edf8;
+  text-align: center;
 }
 
-.medal {
-  font-size: 1.3rem;
-}
+.top3-card.rank-1 .t3-name { font-size: 1.5rem; }
 
-.rstats {
-  display: flex;
-  gap: 12px;
-}
-
-.rstat {
-  text-align: left;
-}
-
-.stat-val {
-  display: block;
-  font-size: 1.5rem;
-  font-weight: 800;
-  line-height: 1.1;
+.t3-score {
+  font-size: 2rem;
+  font-weight: 900;
   color: #e8edf8;
+  line-height: 1.1;
 }
 
-.rstat-label {
-  font-size: 0.7rem;
+.top3-card.rank-1 .t3-score { font-size: 2.6rem; }
+
+.t3-unit {
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #94a3b8;
+  margin-left: 2px;
+}
+
+.t3-votes {
+  font-size: 0.8rem;
   color: #6b7fa8;
-  margin-top: 2px;
+  margin-bottom: 4px;
 }
 
 .bar-wrap {
+  width: 100%;
   height: 5px;
   background: #1a2540;
   border-radius: 999px;
@@ -855,46 +918,53 @@ body {
   width: 0;
   background: linear-gradient(90deg, #3b82f6, #818cf8);
   border-radius: 999px;
-  transition: width 1s cubic-bezier(.22, 1, .36, 1) 0.3s;
+  transition: width 1.2s cubic-bezier(.22, 1, .36, 1) 0.3s;
 }
 
-.result-card.visible .bar { width: var(--bar); }
+.top3-card.visible .bar { width: var(--bar); }
+
+/* 2위 */
+.top3-card.rank-2 {
+  border-color: #94a3b8;
+}
+.top3-card.rank-2 .t3-score { color: #cbd5e1; }
+
+/* 3위 */
+.top3-card.rank-3 {
+  border-color: #78716c;
+}
+.top3-card.rank-3 .t3-score { color: #a8a29e; }
 
 /* ── 1위 챔피언 ── */
 @keyframes championGlow {
   0%   { box-shadow: 0 0 0 rgba(245, 158, 11, 0); }
-  50%  { box-shadow: 0 0 60px 10px rgba(245, 158, 11, 0.5); }
-  100% { box-shadow: 0 0 30px 4px rgba(245, 158, 11, 0.25); }
+  50%  { box-shadow: 0 0 80px 16px rgba(245, 158, 11, 0.55); }
+  100% { box-shadow: 0 0 40px 6px rgba(245, 158, 11, 0.3); }
 }
 
-@keyframes championCard {
+@keyframes championPop {
   0%   { transform: scale(1); }
-  40%  { transform: scale(1.04); }
+  30%  { transform: scale(1.07); }
+  60%  { transform: scale(0.98); }
   100% { transform: scale(1); }
 }
 
-.result-card.champion .card-inner {
+.top3-card.rank-1.champion {
   border-color: #f59e0b;
-  background: #1a1400;
-  animation: championGlow 1.2s ease forwards;
+  background: #120f00;
+  animation: championGlow 1.4s ease forwards, championPop 0.8s ease forwards;
 }
 
-.result-card.champion {
-  animation: championCard 1s ease forwards;
-}
+.top3-card.rank-1.champion .t3-score { color: #f59e0b; }
+.top3-card.rank-1.champion .t3-name  { color: #fcd34d; }
 
-.result-card.champion .rank-badge {
-  background: #f59e0b;
-  color: #000;
-  font-weight: 900;
-}
-
-.result-card.champion .stat-val {
-  color: #f59e0b;
-}
-
-.result-card.champion .bar {
+.top3-card.rank-1.champion .bar {
   background: linear-gradient(90deg, #f59e0b, #fcd34d);
+}
+
+.top3-card.rank-1.champion .t3-rank-badge {
+  color: #f59e0b;
+  font-weight: 900;
 }
 
 /* ── 결과화면 뒤로가기 버튼 ── */

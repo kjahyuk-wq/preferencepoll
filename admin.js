@@ -289,13 +289,15 @@ document.querySelectorAll('.tab-btn').forEach(btn => {
 });
 
 // ── 결과 발표 ─────────────────────────────────────────────
-const sessionBadge    = document.getElementById('sessionBadge');
-const revealBtn       = document.getElementById('revealBtn');
+const sessionBadge     = document.getElementById('sessionBadge');
+const revealBtn        = document.getElementById('revealBtn');
 const countdownOverlay = document.getElementById('countdownOverlay');
-const cdText          = document.getElementById('cdText');
-const resultsSection  = document.getElementById('resultsSection');
-const resultsGrid     = document.getElementById('resultsGrid');
-const resultsBackBtn  = document.getElementById('resultsBackBtn');
+const cdText           = document.getElementById('cdText');
+const resultsSection   = document.getElementById('resultsSection');
+const othersGrid       = document.getElementById('othersGrid');
+const top3Grid         = document.getElementById('top3Grid');
+const top3Announcement = document.getElementById('top3Announcement');
+const resultsBackBtn   = document.getElementById('resultsBackBtn');
 
 revealBtn.addEventListener('click', startReveal);
 resultsBackBtn.addEventListener('click', () => {
@@ -318,8 +320,7 @@ async function startReveal() {
   revealBtn.disabled = true;
   countdownOverlay.classList.remove('hidden');
 
-  const steps = ['5', '4', '3', '2', '1', '결과 발표!'];
-  for (const step of steps) {
+  for (const step of ['5', '4', '3', '2', '1', '결과 발표!']) {
     await showCdStep(step);
   }
   countdownOverlay.classList.add('hidden');
@@ -328,13 +329,25 @@ async function startReveal() {
   buildResultCards(sorted);
   resultsSection.classList.remove('hidden');
 
-  const revealOrder = [...sorted].reverse();
-  for (let i = 0; i < revealOrder.length; i++) {
-    const item = revealOrder[i];
-    const isChampion = i === revealOrder.length - 1 && item.count > 0;
-    await delay(isChampion ? 2800 : 1800);
-    revealCard(item.group, isChampion);
-  }
+  // Phase 1: 하위권 한꺼번에 등장
+  await delay(300);
+  othersGrid.querySelectorAll('.others-card').forEach(c => c.classList.add('visible'));
+
+  // Phase 2: TOP 3 예고
+  await delay(2000);
+  top3Announcement.classList.remove('hidden');
+  await delay(100); // reflow
+  top3Announcement.classList.add('show');
+
+  // Phase 3: 3위 → 2위 → 1위 순차 공개
+  await delay(2000);
+  revealTop3Card(3);
+  await delay(3000);
+  revealTop3Card(2);
+  await delay(3500);
+  revealTop3Card(1);
+  await delay(500);
+  document.querySelector('.top3-card[data-rank="1"]')?.classList.add('champion');
 }
 
 function showCdStep(text) {
@@ -375,51 +388,46 @@ function buildResultCards(sorted) {
   for (const r of sorted) {
     if (r.count > 0) rankMap[r.group] = ++rankIdx;
   }
-  const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
-  const total = sorted.length;
-  const cols = 4;
-  const lastRowCount = total % cols;
-  const lastRowStart = total - lastRowCount;
 
-  resultsGrid.innerHTML = sorted.map((r, idx) => {
+  const top3Groups = new Set(
+    sorted.filter(r => rankMap[r.group] && rankMap[r.group] <= 3).map(r => r.group)
+  );
+  const others = sorted.filter(r => !top3Groups.has(r.group));
+  const top3    = sorted.filter(r =>  top3Groups.has(r.group));
+
+  // 하위권: 순위 없이 조용히
+  othersGrid.innerHTML = others.length ? others.map(r => `
+    <div class="others-card">
+      <span class="others-name">${r.name}</span>
+      <span class="others-score">${r.count > 0 ? r.avg.toFixed(1) + '점' : '-'}</span>
+    </div>`).join('') : '';
+
+  // 상위권: 포디움 배치 (3위 | 1위 | 2위)
+  const byRank = {};
+  top3.forEach(r => { byRank[rankMap[r.group]] = r; });
+  const medals = { 1: '🥇', 2: '🥈', 3: '🥉' };
+  // 포디움 열 순서: 3위(왼쪽) → 1위(가운데) → 2위(오른쪽)
+  const podium = [byRank[3], byRank[1], byRank[2]].filter(Boolean);
+
+  top3Grid.innerHTML = podium.map(r => {
     const rank = rankMap[r.group];
-    const medal = medals[rank] || '';
     const bar = r.count > 0 ? Math.round((r.avg / 10) * 100) : 0;
-    const isTop = rank === 1;
-    let colStyle = '';
-    if (lastRowCount > 0 && idx >= lastRowStart) {
-      const offset = Math.floor((cols - lastRowCount) / 2);
-      if (idx === lastRowStart) colStyle = `grid-column: ${offset + 1}`;
-    }
     return `
-      <div class="result-card ${isTop ? 'top' : ''}" id="rcard-${r.group}" ${colStyle ? `style="${colStyle}"` : ''}>
-        <div class="rank-badge">${rank ? rank + '위' : '-'}</div>
-        <div class="card-inner">
-          <div class="card-header">
-            <span class="rcard-group-name">${r.name}</span>
-            <span class="medal">${medal}</span>
-          </div>
-          <div class="rstats">
-            <div class="rstat">
-              <span class="stat-val">${r.count > 0 ? r.avg.toFixed(1) : '-'}</span>
-              <span class="rstat-label">평균 점수</span>
-            </div>
-            <div class="rstat">
-              <span class="stat-val">${r.count}</span>
-              <span class="rstat-label">투표 수</span>
-            </div>
-          </div>
-          <div class="bar-wrap"><div class="bar" style="--bar: ${bar}%"></div></div>
-        </div>
+      <div class="top3-card rank-${rank}" data-rank="${rank}" id="t3card-${r.group}">
+        <div class="t3-rank-badge">${rank}위</div>
+        <div class="t3-medal">${medals[rank]}</div>
+        <div class="t3-name">${r.name}</div>
+        <div class="t3-score">${r.count > 0 ? r.avg.toFixed(1) : '-'}<span class="t3-unit">점</span></div>
+        <div class="t3-votes">${r.count}표</div>
+        <div class="bar-wrap"><div class="bar" style="--bar: ${bar}%"></div></div>
       </div>`;
   }).join('');
 }
 
-function revealCard(group, isChampion) {
-  const card = document.getElementById(`rcard-${group}`);
+function revealTop3Card(rank) {
+  const card = document.querySelector(`.top3-card[data-rank="${rank}"]`);
   if (!card) return;
   card.classList.add('visible');
-  if (isChampion) setTimeout(() => card.classList.add('champion'), 400);
 }
 
 function listenSession() {
