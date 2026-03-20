@@ -273,6 +273,7 @@ resetConfirmBtn.addEventListener('click', async () => {
     const batch = writeBatch(db);
     votesSnap.forEach(d => batch.delete(d.ref));
     votersSnap.forEach(d => batch.delete(d.ref));
+    batch.set(doc(db, 'session', 'current'), { activeGroup: null, isOpen: false });
     await batch.commit();
     resetModal.classList.add('hidden');
   } finally {
