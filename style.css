@@ -281,6 +281,108 @@ header h2 {
   margin-bottom: 16px;
 }
 
+.voting-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0;
+}
+
+.voting-top .welcome {
+  margin-bottom: 0;
+  border-bottom: none;
+}
+
+.btn-logout {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  padding: 6px 14px;
+  border-radius: 8px;
+  font-size: 0.82rem;
+  font-family: inherit;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.btn-logout:hover {
+  background: #fee2e2;
+  border-color: #fca5a5;
+  color: #dc2626;
+}
+
+/* 투표 완료 + 대기 화면 */
+.success-check {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
+.success-group-name {
+  font-size: 1.5rem;
+  font-weight: 800;
+  color: var(--success);
+  margin-bottom: 4px;
+}
+
+.success-label {
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--text);
+  margin-bottom: 20px;
+}
+
+.divider {
+  width: 48px;
+  height: 2px;
+  background: var(--border);
+  margin: 0 auto 20px;
+  border-radius: 2px;
+}
+
+.waiting-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+.waiting-text {
+  font-size: 1rem;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.waiting-dots {
+  display: flex;
+  gap: 5px;
+  align-items: center;
+}
+
+.waiting-dots span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--primary);
+  animation: blink 1.4s infinite both;
+}
+
+.waiting-dots span:nth-child(2) { animation-delay: 0.2s; }
+.waiting-dots span:nth-child(3) { animation-delay: 0.4s; }
+
+@keyframes blink {
+  0%, 80%, 100% { opacity: 0.2; transform: scale(0.8); }
+  40% { opacity: 1; transform: scale(1); }
+}
+
+.waiting-hint {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.6;
+}
+
 .hidden {
   display: none !important;
 }

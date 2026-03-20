@@ -4,6 +4,7 @@ import {
   collection, onSnapshot, arrayUnion, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+
 // 조 이름 설정 (필요시 수정)
 const GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
 
@@ -19,6 +20,7 @@ const nameInput = document.getElementById('nameInput');
 const idInput = document.getElementById('idInput');
 const loginBtn = document.getElementById('loginBtn');
 const welcomeMsg = document.getElementById('welcomeMsg');
+const logoutBtn  = document.getElementById('logoutBtn');
 const waitingMsg = document.getElementById('waitingMsg');
 const votingBox = document.getElementById('votingBox');
 const alreadyVoted = document.getElementById('alreadyVoted');
@@ -40,21 +42,43 @@ loginBtn.addEventListener('click', handleLogin);
 idInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
 nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') idInput.focus(); });
 
-function handleLogin() {
+async function handleLogin() {
   const name = nameInput.value.trim();
   const employeeId = idInput.value.trim();
   if (!name || !employeeId) {
     alert('이름과 교번을 모두 입력해주세요.');
     return;
   }
-  currentUser = {
-    name,
-    employeeId,
-    voterId: `${name}_${employeeId}`
-  };
-  sessionStorage.setItem('voter', JSON.stringify(currentUser));
-  showVotingSection();
+  loginBtn.disabled = true;
+  loginBtn.textContent = '확인 중...';
+  try {
+    const snap = await getDoc(doc(db, 'participants', `${name}_${employeeId}`));
+    if (!snap.exists()) {
+      alert('등록되지 않은 이름 또는 교번입니다.\n관리자에게 문의하세요.');
+      loginBtn.disabled = false;
+      loginBtn.textContent = '입장하기';
+      return;
+    }
+    currentUser = { name, employeeId, voterId: `${name}_${employeeId}` };
+    sessionStorage.setItem('voter', JSON.stringify(currentUser));
+    showVotingSection();
+  } catch (e) {
+    alert('오류가 발생했습니다. 다시 시도해주세요.');
+    loginBtn.disabled = false;
+    loginBtn.textContent = '입장하기';
+  }
 }
+
+logoutBtn.addEventListener('click', () => {
+  if (sessionUnsubscribe) sessionUnsubscribe();
+  sessionStorage.removeItem('voter');
+  currentUser = null;
+  votingSection.classList.add('hidden');
+  loginSection.classList.remove('hidden');
+  nameInput.value = '';
+  idInput.value = '';
+  nameInput.focus();
+});
 
 function showVotingSection() {
   loginSection.classList.add('hidden');
@@ -97,7 +121,7 @@ function listenSession() {
     groupLabel.textContent = `📢 현재 발표 중: ${GROUP_NAMES[activeGroup - 1]}`;
 
     const voted = await hasVoted(activeGroup);
-    showState(voted ? 'alreadyVoted' : 'voting');
+    showState(voted ? 'alreadyVoted' : 'voting', GROUP_NAMES[activeGroup - 1]);
   });
 }
 
@@ -107,7 +131,9 @@ async function hasVoted(group) {
   return (snap.data().votedGroups || []).includes(group);
 }
 
-function showState(state) {
+const successGroupName = document.getElementById('successGroupName');
+
+function showState(state, groupName = '') {
   waitingMsg.classList.add('hidden');
   votingBox.classList.add('hidden');
   alreadyVoted.classList.add('hidden');
@@ -127,6 +153,7 @@ function showState(state) {
   } else if (state === 'alreadyVoted') {
     alreadyVoted.classList.remove('hidden');
   } else if (state === 'success') {
+    successGroupName.textContent = groupName;
     voteSuccess.classList.remove('hidden');
   }
 }
@@ -156,7 +183,7 @@ submitBtn.addEventListener('click', async () => {
       votedGroups: arrayUnion(currentGroup)
     }, { merge: true });
 
-    showState('success');
+    showState('success', GROUP_NAMES[currentGroup - 1]);
   } catch (e) {
     console.error(e);
     alert('오류가 발생했습니다. 다시 시도해주세요.');

@@ -34,7 +34,10 @@
 
     <!-- 투표 섹션 -->
     <section id="votingSection" class="card hidden">
-      <div id="welcomeMsg"></div>
+      <div class="voting-top">
+        <div id="welcomeMsg"></div>
+        <button class="btn-logout" id="logoutBtn">로그아웃</button>
+      </div>
 
       <!-- 대기 중 -->
       <div id="waitingMsg" class="status-box hidden">
@@ -59,11 +62,17 @@
         <p class="status-sub">다음 조 발표를 기다려 주세요.</p>
       </div>
 
-      <!-- 투표 완료 -->
+      <!-- 투표 완료 + 대기 -->
       <div id="voteSuccess" class="status-box hidden">
-        <div class="status-icon">🎉</div>
-        <p class="status-title">투표 완료!</p>
-        <p class="status-sub">소중한 의견 감사합니다.<br>다음 조 발표를 기다려 주세요.</p>
+        <div class="success-check">✅</div>
+        <p class="success-group-name" id="successGroupName"></p>
+        <p class="success-label">투표가 완료되었습니다</p>
+        <div class="divider"></div>
+        <div class="waiting-row">
+          <span class="waiting-dots"><span></span><span></span><span></span></span>
+          <span class="waiting-text">다음 조 발표 대기 중</span>
+        </div>
+        <p class="waiting-hint">다음 투표가 시작되면 자동으로 화면이 전환됩니다</p>
       </div>
     </section>
   </div>
