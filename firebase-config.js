@@ -1,14 +1,13 @@
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
-// ⚠️ Firebase 콘솔에서 복사한 설정값으로 교체하세요
 const firebaseConfig = {
-  apiKey: "YOUR_API_KEY",
-  authDomain: "YOUR_PROJECT_ID.firebaseapp.com",
-  projectId: "YOUR_PROJECT_ID",
-  storageBucket: "YOUR_PROJECT_ID.appspot.com",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+  apiKey: "AIzaSyBjaUboeJZQb9dsRkXiPmLUD11nicMziY4",
+  authDomain: "preferencepoll.firebaseapp.com",
+  projectId: "preferencepoll",
+  storageBucket: "preferencepoll.firebasestorage.app",
+  messagingSenderId: "940416557761",
+  appId: "1:940416557761:web:f32e658a972a1b5d2e2a40"
 };
 
 const app = initializeApp(firebaseConfig);
