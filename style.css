@@ -312,6 +312,13 @@ header h2 {
   color: #dc2626;
 }
 
+/* 발표중 아이콘 */
+.presenting-icon {
+  font-size: 3rem;
+  margin-bottom: 12px;
+  display: block;
+}
+
 /* 투표 완료 + 대기 화면 */
 .success-check {
   font-size: 3rem;

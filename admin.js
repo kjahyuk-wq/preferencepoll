@@ -75,9 +75,21 @@ function makeGroupNameRow(value) {
   const row = document.createElement('div');
   row.className = 'group-name-row';
   row.innerHTML = `
+    <div class="row-order-btns">
+      <button class="btn-order" data-dir="up" title="위로">▲</button>
+      <button class="btn-order" data-dir="down" title="아래로">▼</button>
+    </div>
     <input type="text" class="group-name-input" value="${value}" maxlength="20" />
     <button class="btn-del-row" title="삭제">✕</button>
   `;
+  row.querySelector('[data-dir="up"]').addEventListener('click', () => {
+    const prev = row.previousElementSibling;
+    if (prev) groupNameEditor.insertBefore(row, prev);
+  });
+  row.querySelector('[data-dir="down"]').addEventListener('click', () => {
+    const next = row.nextElementSibling;
+    if (next) groupNameEditor.insertBefore(next, row);
+  });
   row.querySelector('.btn-del-row').addEventListener('click', () => {
     if (groupNameEditor.querySelectorAll('.group-name-input').length > 1) row.remove();
   });
@@ -227,7 +239,7 @@ async function openVoting(group) {
 
 async function closeVoting() {
   await setDoc(doc(db, 'session', 'current'), {
-    activeGroup: null,
+    activeGroup: sessionData.activeGroup,
     isOpen: false
   });
 }

@@ -4,9 +4,13 @@ import {
   collection, onSnapshot, arrayUnion, serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 
+let GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
 
-// 조 이름 설정 (필요시 수정)
-const GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
+onSnapshot(doc(db, 'settings', 'groups'), (snap) => {
+  if (snap.exists() && Array.isArray(snap.data().names)) {
+    GROUP_NAMES = snap.data().names;
+  }
+});
 
 let currentUser = null;
 let selectedScore = null;
@@ -112,8 +116,10 @@ function selectScore(score) {
 function listenSession() {
   if (sessionUnsubscribe) sessionUnsubscribe();
   sessionUnsubscribe = onSnapshot(doc(db, 'session', 'current'), async (snap) => {
-    if (!snap.exists() || !snap.data().isOpen || !snap.data().activeGroup) {
-      showState('waiting');
+    const data = snap.exists() ? snap.data() : {};
+    if (!data.isOpen || !data.activeGroup) {
+      const groupName = data.activeGroup ? GROUP_NAMES[data.activeGroup - 1] : null;
+      showState('waiting', groupName);
       return;
     }
     const { activeGroup } = snap.data();
@@ -131,8 +137,11 @@ async function hasVoted(group) {
   return (snap.data().votedGroups || []).includes(group);
 }
 
-const successGroupName = document.getElementById('successGroupName');
-const alreadyGroupName = document.getElementById('alreadyGroupName');
+const successGroupName  = document.getElementById('successGroupName');
+const alreadyGroupName  = document.getElementById('alreadyGroupName');
+const waitingPresenting = document.getElementById('waitingPresenting');
+const waitingIdle       = document.getElementById('waitingIdle');
+const waitingGroupName  = document.getElementById('waitingGroupName');
 
 function showState(state, groupName = '') {
   waitingMsg.classList.add('hidden');
@@ -141,6 +150,14 @@ function showState(state, groupName = '') {
   voteSuccess.classList.add('hidden');
 
   if (state === 'waiting') {
+    if (groupName) {
+      waitingGroupName.textContent = groupName;
+      waitingPresenting.classList.remove('hidden');
+      waitingIdle.classList.add('hidden');
+    } else {
+      waitingPresenting.classList.add('hidden');
+      waitingIdle.classList.remove('hidden');
+    }
     waitingMsg.classList.remove('hidden');
   } else if (state === 'voting') {
     votingBox.classList.remove('hidden');

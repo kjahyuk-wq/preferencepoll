@@ -41,9 +41,24 @@
 
       <!-- 대기 중 -->
       <div id="waitingMsg" class="status-box hidden">
-        <div class="status-icon">⏳</div>
-        <p class="status-title">잠시 기다려 주세요</p>
-        <p class="status-sub">다음 조의 발표가 끝나면 투표가 시작됩니다.</p>
+        <!-- 발표 중인 조 있을 때 -->
+        <div id="waitingPresenting" class="hidden">
+          <div class="presenting-icon">🎤</div>
+          <p class="success-group-name" id="waitingGroupName"></p>
+          <p class="success-label">발표 중</p>
+          <div class="divider"></div>
+          <div class="waiting-row">
+            <span class="waiting-dots"><span></span><span></span><span></span></span>
+            <span class="waiting-text">투표 시작 대기 중</span>
+          </div>
+          <p class="waiting-hint">투표가 열리면 자동으로 화면이 전환됩니다</p>
+        </div>
+        <!-- 아직 아무 조도 없을 때 -->
+        <div id="waitingIdle">
+          <div class="status-icon">⏳</div>
+          <p class="status-title">잠시 기다려 주세요</p>
+          <p class="status-sub">첫 번째 조 발표 시작을 기다리고 있습니다.</p>
+        </div>
       </div>
 
       <!-- 투표 폼 -->
