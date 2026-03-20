@@ -42,6 +42,8 @@
       <!-- 탭 네비게이션 -->
       <div class="tab-nav">
         <button class="tab-btn active" data-tab="manage">⚙️ 관리</button>
+        <button class="tab-btn" data-tab="voting">🗳️ 투표 관리</button>
+        <button class="tab-btn" data-tab="stats">📊 결과 현황</button>
         <button class="tab-btn" data-tab="results">🎬 결과 발표</button>
       </div>
 
@@ -96,13 +98,18 @@
           </div>
         </section>
 
-        <!-- 조별 카드 -->
+      </div>
+
+      <!-- 투표 관리 탭 -->
+      <div id="tab-voting" class="tab-panel hidden">
         <section class="section">
-          <h2 class="section-title">조별 투표 관리</h2>
+          <h2 class="section-title">🗳️ 조별 투표 관리</h2>
           <div class="group-grid" id="groupGrid"></div>
         </section>
+      </div>
 
-        <!-- 결과 테이블 -->
+      <!-- 결과 현황 탭 -->
+      <div id="tab-stats" class="tab-panel hidden">
         <section class="section">
           <h2 class="section-title">📊 결과 현황</h2>
           <div class="table-wrap">
