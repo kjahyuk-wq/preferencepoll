@@ -156,7 +156,10 @@ function initParticipants() {
 
 async function deleteParticipant(id) {
   if (!confirm('심사자를 삭제하시겠습니까?')) return;
-  await deleteDoc(doc(db, 'participants', id));
+  await Promise.all([
+    deleteDoc(doc(db, 'participants', id)),
+    deleteDoc(doc(db, 'voters', id)),
+  ]);
 }
 
 // 엑셀 업로드
