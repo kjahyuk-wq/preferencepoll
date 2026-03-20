@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>관리자 페이지 - 선호도 투표</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="admin.css" />
+</head>
+<body>
+  <div class="admin-wrap">
+    <header class="admin-header">
+      <div>
+        <div class="admin-logo">🏛️ 대전광역시 인재개발원</div>
+        <h1>신규자 교육 발표 선호도 투표 — 관리자</h1>
+      </div>
+    </header>
+
+    <!-- 관리자 로그인 -->
+    <section id="adminLoginSection" class="login-card">
+      <h2>관리자 로그인</h2>
+      <div class="form-group">
+        <label for="adminPwInput">비밀번호</label>
+        <input type="password" id="adminPwInput" placeholder="관리자 비밀번호 입력" />
+      </div>
+      <button class="btn btn-blue" id="adminLoginBtn">로그인</button>
+    </section>
+
+    <!-- 관리자 대시보드 -->
+    <div id="adminDashboard" class="hidden">
+
+      <!-- 현재 상태 표시줄 -->
+      <div class="status-bar">
+        <div id="sessionStatus" class="session-status">🔴 현재 진행 중인 투표 없음</div>
+        <button class="btn btn-red" id="closeAllBtn">투표 닫기</button>
+      </div>
+
+      <!-- 조별 카드 -->
+      <section class="section">
+        <h2 class="section-title">조별 투표 관리</h2>
+        <div class="group-grid" id="groupGrid"></div>
+      </section>
+
+      <!-- 결과 테이블 -->
+      <section class="section">
+        <h2 class="section-title">📊 결과 현황</h2>
+        <div class="table-wrap">
+          <table class="results-table">
+            <thead>
+              <tr>
+                <th>조</th>
+                <th>투표 수</th>
+                <th>평균 점수</th>
+                <th>순위</th>
+              </tr>
+            </thead>
+            <tbody id="resultsBody"></tbody>
+          </table>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script type="module" src="admin.js"></script>
+</body>
+</html>

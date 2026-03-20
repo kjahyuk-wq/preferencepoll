@@ -1,14 +1,73 @@
 <!doctype html>
-<html lang="en">
+<html lang="ko">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Hello World</title>
-  <link href='/style.css' rel='stylesheet'>
+  <title>신규자 교육 발표 선호도 투표</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
-  <h1>Hello, world!</h1>
-  <button onclick="console.log('hello');">Press me</button>
-  <script defer type="text/javascript" src="/main.js"></script>
+  <div class="container">
+    <header>
+      <div class="logo">🏛️</div>
+      <h1>대전광역시 인재개발원</h1>
+      <h2>신규자 교육 발표 선호도 투표</h2>
+    </header>
+
+    <!-- 로그인 섹션 -->
+    <section id="loginSection" class="card">
+      <h3>참가자 확인</h3>
+      <p class="desc">이름과 교번을 입력하여 투표에 참여하세요.</p>
+      <div class="form-group">
+        <label for="nameInput">이름</label>
+        <input type="text" id="nameInput" placeholder="이름을 입력하세요" autocomplete="off" />
+      </div>
+      <div class="form-group">
+        <label for="idInput">교번</label>
+        <input type="text" id="idInput" placeholder="교번을 입력하세요" autocomplete="off" />
+      </div>
+      <button class="btn btn-primary" id="loginBtn">입장하기</button>
+      <p class="privacy-note">※ 투표 내용은 익명으로 처리되며, 이름·교번은 중복 투표 방지에만 사용됩니다.</p>
+    </section>
+
+    <!-- 투표 섹션 -->
+    <section id="votingSection" class="card hidden">
+      <div id="welcomeMsg"></div>
+
+      <!-- 대기 중 -->
+      <div id="waitingMsg" class="status-box hidden">
+        <div class="status-icon">⏳</div>
+        <p class="status-title">잠시 기다려 주세요</p>
+        <p class="status-sub">다음 조의 발표가 끝나면 투표가 시작됩니다.</p>
+      </div>
+
+      <!-- 투표 폼 -->
+      <div id="votingBox" class="hidden">
+        <div class="group-label" id="groupLabel"></div>
+        <p class="vote-instruction">발표에 대한 점수를 선택해 주세요</p>
+        <div class="score-grid" id="scoreGrid"></div>
+        <div class="selected-score hidden" id="selectedDisplay"></div>
+        <button class="btn btn-submit hidden" id="submitBtn">투표 제출하기</button>
+      </div>
+
+      <!-- 이미 투표함 -->
+      <div id="alreadyVoted" class="status-box hidden">
+        <div class="status-icon">✅</div>
+        <p class="status-title">이미 투표하셨습니다</p>
+        <p class="status-sub">다음 조 발표를 기다려 주세요.</p>
+      </div>
+
+      <!-- 투표 완료 -->
+      <div id="voteSuccess" class="status-box hidden">
+        <div class="status-icon">🎉</div>
+        <p class="status-title">투표 완료!</p>
+        <p class="status-sub">소중한 의견 감사합니다.<br>다음 조 발표를 기다려 주세요.</p>
+      </div>
+    </section>
+  </div>
+
+  <script type="module" src="main.js"></script>
 </body>
 </html>

@@ -1,1 +1,166 @@
-// Add JS here
+import { db } from './firebase-config.js';
+import {
+  doc, getDoc, setDoc, addDoc,
+  collection, onSnapshot, arrayUnion, serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
+
+// 조 이름 설정 (필요시 수정)
+const GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
+
+let currentUser = null;
+let selectedScore = null;
+let currentGroup = null;
+let sessionUnsubscribe = null;
+
+// 요소 참조
+const loginSection = document.getElementById('loginSection');
+const votingSection = document.getElementById('votingSection');
+const nameInput = document.getElementById('nameInput');
+const idInput = document.getElementById('idInput');
+const loginBtn = document.getElementById('loginBtn');
+const welcomeMsg = document.getElementById('welcomeMsg');
+const waitingMsg = document.getElementById('waitingMsg');
+const votingBox = document.getElementById('votingBox');
+const alreadyVoted = document.getElementById('alreadyVoted');
+const voteSuccess = document.getElementById('voteSuccess');
+const groupLabel = document.getElementById('groupLabel');
+const scoreGrid = document.getElementById('scoreGrid');
+const selectedDisplay = document.getElementById('selectedDisplay');
+const submitBtn = document.getElementById('submitBtn');
+
+// 이전 세션 복원
+const saved = sessionStorage.getItem('voter');
+if (saved) {
+  currentUser = JSON.parse(saved);
+  showVotingSection();
+}
+
+// 로그인 이벤트
+loginBtn.addEventListener('click', handleLogin);
+idInput.addEventListener('keydown', e => { if (e.key === 'Enter') handleLogin(); });
+nameInput.addEventListener('keydown', e => { if (e.key === 'Enter') idInput.focus(); });
+
+function handleLogin() {
+  const name = nameInput.value.trim();
+  const employeeId = idInput.value.trim();
+  if (!name || !employeeId) {
+    alert('이름과 교번을 모두 입력해주세요.');
+    return;
+  }
+  currentUser = {
+    name,
+    employeeId,
+    voterId: `${name}_${employeeId}`
+  };
+  sessionStorage.setItem('voter', JSON.stringify(currentUser));
+  showVotingSection();
+}
+
+function showVotingSection() {
+  loginSection.classList.add('hidden');
+  votingSection.classList.remove('hidden');
+  welcomeMsg.innerHTML = `<p class="welcome">안녕하세요, <strong>${currentUser.name}</strong>님 👋</p>`;
+  buildScoreGrid();
+  listenSession();
+}
+
+function buildScoreGrid() {
+  scoreGrid.innerHTML = '';
+  for (let i = 1; i <= 10; i++) {
+    const btn = document.createElement('button');
+    btn.className = 'score-btn';
+    btn.textContent = i;
+    btn.addEventListener('click', () => selectScore(i));
+    scoreGrid.appendChild(btn);
+  }
+}
+
+function selectScore(score) {
+  selectedScore = score;
+  document.querySelectorAll('.score-btn').forEach((btn, idx) => {
+    btn.classList.toggle('selected', idx + 1 === score);
+  });
+  selectedDisplay.textContent = `선택한 점수: ${score}점`;
+  selectedDisplay.classList.remove('hidden');
+  submitBtn.classList.remove('hidden');
+}
+
+function listenSession() {
+  if (sessionUnsubscribe) sessionUnsubscribe();
+  sessionUnsubscribe = onSnapshot(doc(db, 'session', 'current'), async (snap) => {
+    if (!snap.exists() || !snap.data().isOpen || !snap.data().activeGroup) {
+      showState('waiting');
+      return;
+    }
+    const { activeGroup } = snap.data();
+    currentGroup = activeGroup;
+    groupLabel.textContent = `📢 현재 발표 중: ${GROUP_NAMES[activeGroup - 1]}`;
+
+    const voted = await hasVoted(activeGroup);
+    showState(voted ? 'alreadyVoted' : 'voting');
+  });
+}
+
+async function hasVoted(group) {
+  const snap = await getDoc(doc(db, 'voters', currentUser.voterId));
+  if (!snap.exists()) return false;
+  return (snap.data().votedGroups || []).includes(group);
+}
+
+function showState(state) {
+  waitingMsg.classList.add('hidden');
+  votingBox.classList.add('hidden');
+  alreadyVoted.classList.add('hidden');
+  voteSuccess.classList.add('hidden');
+
+  if (state === 'waiting') {
+    waitingMsg.classList.remove('hidden');
+  } else if (state === 'voting') {
+    votingBox.classList.remove('hidden');
+    // 점수 초기화
+    selectedScore = null;
+    selectedDisplay.classList.add('hidden');
+    submitBtn.classList.add('hidden');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '투표 제출하기';
+    document.querySelectorAll('.score-btn').forEach(btn => btn.classList.remove('selected'));
+  } else if (state === 'alreadyVoted') {
+    alreadyVoted.classList.remove('hidden');
+  } else if (state === 'success') {
+    voteSuccess.classList.remove('hidden');
+  }
+}
+
+submitBtn.addEventListener('click', async () => {
+  if (!selectedScore || !currentGroup) return;
+
+  submitBtn.disabled = true;
+  submitBtn.textContent = '제출 중...';
+
+  try {
+    // 이중 체크
+    if (await hasVoted(currentGroup)) {
+      showState('alreadyVoted');
+      return;
+    }
+
+    // 익명 투표 저장 (이름/교번 없이 점수만)
+    await addDoc(collection(db, 'votes'), {
+      group: currentGroup,
+      score: selectedScore,
+      timestamp: serverTimestamp()
+    });
+
+    // 투표자 기록 (중복 방지용, 점수와 연결 안 됨)
+    await setDoc(doc(db, 'voters', currentUser.voterId), {
+      votedGroups: arrayUnion(currentGroup)
+    }, { merge: true });
+
+    showState('success');
+  } catch (e) {
+    console.error(e);
+    alert('오류가 발생했습니다. 다시 시도해주세요.');
+    submitBtn.disabled = false;
+    submitBtn.textContent = '투표 제출하기';
+  }
+});
