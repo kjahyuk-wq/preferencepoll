@@ -6,8 +6,8 @@ import {
 // ⚠️ 관리자 비밀번호 (변경 가능)
 const ADMIN_PASSWORD = 'hrd2024!';
 
-// 조 이름 설정 (필요시 수정)
-const GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
+// 조 이름 기본값
+let GROUP_NAMES = ["1조", "2조", "3조", "4조", "5조", "6조", "7조"];
 
 let sessionData = { activeGroup: null, isOpen: false };
 let voteData = {}; // { 1: [7, 8, 9, ...], 2: [...], ... }
@@ -39,10 +39,61 @@ function handleAdminLogin() {
 }
 
 function initDashboard() {
-  buildGroupCards();
+  listenGroupNames();
   listenSession();
   listenVotes();
   initParticipants();
+}
+
+// ── 조 이름 관리 ──────────────────────────────────────────
+const groupNameEditor   = document.getElementById('groupNameEditor');
+const saveGroupNamesBtn = document.getElementById('saveGroupNamesBtn');
+const addGroupBtn       = document.getElementById('addGroupBtn');
+
+saveGroupNamesBtn.addEventListener('click', saveGroupNames);
+addGroupBtn.addEventListener('click', () => {
+  const idx = groupNameEditor.querySelectorAll('.group-name-input').length + 1;
+  groupNameEditor.appendChild(makeGroupNameRow(`${idx}조`));
+});
+
+function listenGroupNames() {
+  onSnapshot(doc(db, 'settings', 'groups'), (snap) => {
+    if (snap.exists() && Array.isArray(snap.data().names)) {
+      GROUP_NAMES = snap.data().names;
+    }
+    renderGroupNameInputs();
+    buildGroupCards();
+  });
+}
+
+function renderGroupNameInputs() {
+  groupNameEditor.innerHTML = '';
+  GROUP_NAMES.forEach(name => groupNameEditor.appendChild(makeGroupNameRow(name)));
+}
+
+function makeGroupNameRow(value) {
+  const row = document.createElement('div');
+  row.className = 'group-name-row';
+  row.innerHTML = `
+    <input type="text" class="group-name-input" value="${value}" maxlength="20" />
+    <button class="btn-del-row" title="삭제">✕</button>
+  `;
+  row.querySelector('.btn-del-row').addEventListener('click', () => {
+    if (groupNameEditor.querySelectorAll('.group-name-input').length > 1) row.remove();
+  });
+  return row;
+}
+
+async function saveGroupNames() {
+  const names = [...groupNameEditor.querySelectorAll('.group-name-input')]
+    .map(i => i.value.trim())
+    .filter(n => n);
+  if (names.length === 0) return;
+  saveGroupNamesBtn.disabled = true;
+  saveGroupNamesBtn.textContent = '저장 중...';
+  await setDoc(doc(db, 'settings', 'groups'), { names });
+  saveGroupNamesBtn.disabled = false;
+  saveGroupNamesBtn.textContent = '저장';
 }
 
 // 참가자 관리

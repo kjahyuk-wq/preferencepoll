@@ -496,6 +496,66 @@ body {
   display: none !important;
 }
 
+/* ── 조 이름 편집기 ── */
+.group-name-editor {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.group-name-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-name-input {
+  flex: 1;
+  padding: 10px 14px;
+  background: var(--surface2);
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  color: var(--text);
+  font-size: 0.95rem;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.group-name-input:focus {
+  border-color: var(--blue);
+}
+
+.btn-del-row {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-muted);
+  width: 32px;
+  height: 32px;
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: border-color 0.15s, color 0.15s;
+  flex-shrink: 0;
+}
+
+.btn-del-row:hover {
+  border-color: var(--red);
+  color: var(--red);
+}
+
+.group-name-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.btn-icon {
+  width: auto;
+  padding: 10px 20px;
+  font-size: 0.9rem;
+}
+
 /* ── 탭 네비게이션 ── */
 .tab-nav {
   display: flex;
