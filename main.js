@@ -79,6 +79,8 @@ logoutBtn.addEventListener('click', () => {
   currentUser = null;
   votingSection.classList.add('hidden');
   loginSection.classList.remove('hidden');
+  loginBtn.disabled = false;
+  loginBtn.textContent = '입장하기';
   nameInput.value = '';
   idInput.value = '';
   nameInput.focus();
